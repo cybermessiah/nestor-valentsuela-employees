@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import Papa from 'papaparse'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const changeHandler = (event) => {
+        // Passing file data (event.target.files[0]) to parse using Papa.parse
+        Papa.parse(event.target.files[0], {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                console.log(results.data)
+            },
+        })
+    }
+    return (
+        <div>
+            {/* File Uploader */}
+            <input
+                type="file"
+                name="file"
+                accept=".csv"
+                onChange={changeHandler}
+                style={{ display: 'block', margin: '10px auto' }}
+            />
+        </div>
+    )
 }
 
-export default App;
+export default App
