@@ -22,39 +22,28 @@ function App() {
     }))
     // console.log(addNames)
 
-    // convert to Unix timestamp
-
-    function convertDates(dateToConvert) {
-        const date = new Date(dateToConvert)
-
-        const timeInMillisecond = date.getTime()
-
-        const unixTimestamp = Math.floor(date.getTime() / 1000)
-
-        // console.log(unixTimestamp) // 1623801600
-        return unixTimestamp
-    }
-
     // Returns a new array of objects made up UNIX timestamp values.
     const reformatDates = (addNames) => {
         return addNames.map(function (el) {
             // create a new object to store the total days.
             var newObj = {}
+            var dateToConverted = ''
+            var dateFromConverted = ''
             if (el.DateFrom === 'null') {
-                newObj['DateFrom'] = new Date()
+                dateFromConverted = new Date()
             } else {
-                newObj['DateFrom'] = new Date(el.DateFrom)
+                dateFromConverted = new Date(el.DateFrom)
             }
             if (el.DateTo === 'null') {
-                newObj['DateTo'] = new Date()
+                dateToConverted = new Date()
             } else {
-                newObj['DateTo'] = new Date(el.DateTo)
+                dateToConverted = new Date(el.DateTo)
             }
-            // var dateDiff = convertDates(el.DateTo) - convertDates(el.DateFrom)
-            var dateDiff = newObj['DateTo'] - newObj['DateFrom']
+            var dateDiff = dateToConverted - dateFromConverted
+
+            newObj['ProjectID'] = el.ProjectID
             newObj['DaysTotal'] = Math.ceil(dateDiff / (1000 * 60 * 60 * 24))
 
-            // return our new object.
             // console.log(newObj)
             return newObj
         })
@@ -62,6 +51,25 @@ function App() {
 
     var fullNameArray = reformatDates(addNames)
     console.log(fullNameArray)
+
+    const totalHoursPerProject = Object.values(
+        fullNameArray.reduce((acc, item) => {
+            acc[item.ProjectID] = acc[item.ProjectID]
+                ? {
+                      ...item,
+                      CombinedDays:
+                          item.DaysTotal + acc[item.ProjectID].DaysTotal,
+                  }
+                : { ...item, CombinedDays: item.DaysTotal }
+            return acc
+        }, {}),
+    )
+    console.log(totalHoursPerProject)
+
+    const maxDaysWorked = Math.max(
+        ...totalHoursPerProject.map((el) => el.totalHoursPerProject),
+    )
+    console.log(totalHoursPerProject)
 
     var uniqueProjectsArray = Array.from(
         new Set(addNames.map((x) => x.ProjectID)),
