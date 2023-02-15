@@ -20,12 +20,53 @@ function App() {
         DateFrom: x[2].trim(),
         DateTo: x[3].trim(),
     }))
-    console.log(addNames)
+    // console.log(addNames)
+
+    // convert to Unix timestamp
+
+    function convertDates(dateToConvert) {
+        const date = new Date(dateToConvert)
+
+        const timeInMillisecond = date.getTime()
+
+        const unixTimestamp = Math.floor(date.getTime() / 1000)
+
+        // console.log(unixTimestamp) // 1623801600
+        return unixTimestamp
+    }
+
+    // Returns a new array of objects made up UNIX timestamp values.
+    const reformatDates = (addNames) => {
+        return addNames.map(function (el) {
+            // create a new object to store the total days.
+            var newObj = {}
+            if (el.DateFrom === 'null') {
+                newObj['DateFrom'] = new Date()
+            } else {
+                newObj['DateFrom'] = new Date(el.DateFrom)
+            }
+            if (el.DateTo === 'null') {
+                newObj['DateTo'] = new Date()
+            } else {
+                newObj['DateTo'] = new Date(el.DateTo)
+            }
+            // var dateDiff = convertDates(el.DateTo) - convertDates(el.DateFrom)
+            var dateDiff = newObj['DateTo'] - newObj['DateFrom']
+            newObj['DaysTotal'] = Math.ceil(dateDiff / (1000 * 60 * 60 * 24))
+
+            // return our new object.
+            // console.log(newObj)
+            return newObj
+        })
+    }
+
+    var fullNameArray = reformatDates(addNames)
+    console.log(fullNameArray)
 
     var uniqueProjectsArray = Array.from(
         new Set(addNames.map((x) => x.ProjectID)),
     ) // Unique Array ['a', 'b'];
-    console.log(uniqueProjectsArray)
+    // console.log(uniqueProjectsArray)
 
     const changeHandler = (event) => {
         // Passing file data (event.target.files[0]) to parse using Papa.parse
@@ -33,7 +74,7 @@ function App() {
             complete: function (results) {
                 const rowsArray = []
                 const valuesArray = []
-                console.log(results.data)
+                // console.log(results.data)
                 // Iterating data to get column name and their values
                 results.data.map((d) => {
                     rowsArray.push(Object.keys(d))
