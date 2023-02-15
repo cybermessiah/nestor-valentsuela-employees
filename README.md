@@ -1,3 +1,5 @@
+The project take input of CSV file and calclulates the longest period of a project and shows the two employees who worked on it.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

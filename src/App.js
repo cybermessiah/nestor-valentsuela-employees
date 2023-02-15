@@ -3,7 +3,6 @@ import { useState } from 'react'
 import Papa from 'papaparse'
 
 function App() {
-    // State to store parsed data
     const [parsedData, setParsedData] = useState([])
 
     const tableRows = [
@@ -15,17 +14,15 @@ function App() {
 
     const dataToCalculate = parsedData
 
-    var addNames = dataToCalculate.map((x) => ({
+    var addPropertyNames = dataToCalculate.map((x) => ({
         EmpID: x[0].trim(),
         ProjectID: x[1].trim(),
         DateFrom: x[2].trim(),
         DateTo: x[3].trim(),
     }))
-    // console.log(addNames)
 
-    // Returns a new array of objects made up UNIX timestamp values.
-    const reformatDates = (addNames) => {
-        return addNames.map(function (el) {
+    const reformatDates = (addPropertyNames) => {
+        return addPropertyNames.map(function (el) {
             // create a new object to store the total days.
             var newObj = {}
             var dateToConverted = ''
@@ -45,15 +42,14 @@ function App() {
             newObj['ProjectID'] = el.ProjectID
             newObj['DaysTotal'] = Math.ceil(dateDiff / (1000 * 60 * 60 * 24))
 
-            // console.log(newObj)
             return newObj
         })
     }
 
-    var fullNameArray = reformatDates(addNames)
+    let convertedDatesArray = reformatDates(addPropertyNames)
 
     const totalHoursPerProject = Object.values(
-        fullNameArray.reduce((acc, item) => {
+        convertedDatesArray.reduce((acc, item) => {
             acc[item.ProjectID] = acc[item.ProjectID]
                 ? {
                       ...item,
@@ -64,20 +60,35 @@ function App() {
             return acc
         }, {}),
     )
-    console.log(totalHoursPerProject)
 
     const maxDaysWorked = Math.max(
         ...totalHoursPerProject.map((el) => el.CombinedDays),
     )
-    console.log(maxDaysWorked)
+
+    let indexOfProject = ''
+
+    totalHoursPerProject.some(function (el, i) {
+        if (el.CombinedDays === maxDaysWorked) {
+            indexOfProject = i
+            return true
+        }
+        return false
+    })
+
+    const projectLongest = totalHoursPerProject[indexOfProject]?.ProjectID
+
+    const employeePerProject = []
+
+    addPropertyNames.forEach(function (el) {
+        if (el.ProjectID === '10') {
+            employeePerProject.push(el.EmpID)
+        }
+    })
 
     const changeHandler = (event) => {
         // Passing file data (event.target.files[0]) to parse using Papa.parse
         Papa.parse(event.target.files[0], {
             complete: function (results) {
-                // console.log(results.data)
-
-                // Parsed Data Response in array format
                 setParsedData(results.data)
             },
         })
@@ -85,7 +96,6 @@ function App() {
     return (
         <>
             <div>
-                {/* File Uploader */}
                 <input
                     type="file"
                     name="file"
@@ -95,7 +105,6 @@ function App() {
                 />
             </div>
             <br />
-            {/* Table */}
             <table>
                 <thead>
                     <tr>
@@ -105,25 +114,15 @@ function App() {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* {values.map((value, index) => {
-                        return (
-                            <tr key={index}>
-                                {value.map((val, i) => {
-                                    return <td key={i}>{val}</td>
-                                })}
-                            </tr>
-                        )
-                    })} */}
+                    <tr>
+                        {employeePerProject.map((value, index) => {
+                            return <td key={index}>{value}</td>
+                        })}
+                        <td>{projectLongest}</td>
+                        <td>{maxDaysWorked}</td>
+                    </tr>
                 </tbody>
             </table>
-            <div>
-                <h3>Distinct Values</h3>
-                <ul>
-                    {/* {uniqueProjectsArray.map((name) => (
-                        <li key={name}> {name} </li>
-                    ))} */}
-                </ul>
-            </div>
         </>
     )
 }
