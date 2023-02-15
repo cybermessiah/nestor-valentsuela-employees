@@ -6,11 +6,12 @@ function App() {
     // State to store parsed data
     const [parsedData, setParsedData] = useState([])
 
-    //State to store table Column name
-    const [tableRows, setTableRows] = useState([])
-
-    //State to store the values
-    const [values, setValues] = useState([])
+    const tableRows = [
+        'Employee ID #1',
+        'Employee ID #2',
+        'Project ID',
+        'Days worked',
+    ]
 
     const dataToCalculate = parsedData
 
@@ -50,7 +51,6 @@ function App() {
     }
 
     var fullNameArray = reformatDates(addNames)
-    console.log(fullNameArray)
 
     const totalHoursPerProject = Object.values(
         fullNameArray.reduce((acc, item) => {
@@ -67,36 +67,18 @@ function App() {
     console.log(totalHoursPerProject)
 
     const maxDaysWorked = Math.max(
-        ...totalHoursPerProject.map((el) => el.totalHoursPerProject),
+        ...totalHoursPerProject.map((el) => el.CombinedDays),
     )
-    console.log(totalHoursPerProject)
-
-    var uniqueProjectsArray = Array.from(
-        new Set(addNames.map((x) => x.ProjectID)),
-    ) // Unique Array ['a', 'b'];
-    // console.log(uniqueProjectsArray)
+    console.log(maxDaysWorked)
 
     const changeHandler = (event) => {
         // Passing file data (event.target.files[0]) to parse using Papa.parse
         Papa.parse(event.target.files[0], {
             complete: function (results) {
-                const rowsArray = []
-                const valuesArray = []
                 // console.log(results.data)
-                // Iterating data to get column name and their values
-                results.data.map((d) => {
-                    rowsArray.push(Object.keys(d))
-                    valuesArray.push(Object.values(d))
-                })
 
                 // Parsed Data Response in array format
                 setParsedData(results.data)
-
-                // Filtered Column Names
-                setTableRows(rowsArray[0])
-
-                // Filtered Values
-                setValues(valuesArray)
             },
         })
     }
@@ -123,7 +105,7 @@ function App() {
                     </tr>
                 </thead>
                 <tbody>
-                    {values.map((value, index) => {
+                    {/* {values.map((value, index) => {
                         return (
                             <tr key={index}>
                                 {value.map((val, i) => {
@@ -131,15 +113,15 @@ function App() {
                                 })}
                             </tr>
                         )
-                    })}
+                    })} */}
                 </tbody>
             </table>
             <div>
                 <h3>Distinct Values</h3>
                 <ul>
-                    {uniqueProjectsArray.map((name) => (
+                    {/* {uniqueProjectsArray.map((name) => (
                         <li key={name}> {name} </li>
-                    ))}
+                    ))} */}
                 </ul>
             </div>
         </>
