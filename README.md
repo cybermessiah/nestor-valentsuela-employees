@@ -1,4 +1,4 @@
-The project take input of CSV file and calclulates the longest period of a project and shows the two employees who worked on it.
+The project takes input of CSV file, calclulates the longest period of a common project and shows the two employees who worked on it.
 
 # Getting Started with Create React App
 
